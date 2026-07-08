@@ -1,10 +1,10 @@
-export default function VistaUsuarios({ usuarios, agregarUsuario, editarUsuario, eliminarUsuario }) {
+export default function VistaUsuarios({ usuarios, abrirModalCrearUsuario, abrirModalEditarUsuario, eliminarUsuario }) {
   return (
     <>
       <div className="content-header">
         <h1>Usuarios</h1>
 
-        <button className="btn btn-primary" onClick={agregarUsuario}>
+        <button className="btn btn-primary" onClick={abrirModalCrearUsuario}>
           + Agregar
         </button>
       </div>
@@ -31,7 +31,7 @@ export default function VistaUsuarios({ usuarios, agregarUsuario, editarUsuario,
               <td>{new Date(usuario.fechaCreacion).toLocaleDateString()}</td>
 
               <td className="actions">
-                <button className="btn btn-icon" onClick={() => editarUsuario(usuario)}>
+                <button className="btn btn-icon" onClick={() => abrirModalEditarUsuario(usuario)}>
                   Editar
                 </button>
 

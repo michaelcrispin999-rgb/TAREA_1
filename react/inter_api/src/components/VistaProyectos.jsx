@@ -1,10 +1,10 @@
-export default function VistaProyectos({ proyectos, agregarProyecto, editarProyecto, eliminarProyecto }) {
+export default function VistaProyectos({ proyectos, abrirModalCrearProyecto, abrirModalEditarProyecto, eliminarProyecto }) {
   return (
     <>
       <div className="content-header">
         <h1>Proyectos</h1>
 
-        <button className="btn btn-primary" onClick={agregarProyecto}>
+        <button className="btn btn-primary" onClick={abrirModalCrearProyecto}>
           + Agregar
         </button>
       </div>
@@ -29,7 +29,7 @@ export default function VistaProyectos({ proyectos, agregarProyecto, editarProye
               <td>{new Date(proyecto.fechaCreacion).toLocaleDateString()}</td>
 
               <td className="actions">
-                <button className="btn btn-icon" onClick={() => editarProyecto(proyecto)}>
+                <button className="btn btn-icon" onClick={() => abrirModalEditarProyecto(proyecto)}>
                   Editar
                 </button>
 

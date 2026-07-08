@@ -70,19 +70,72 @@ export default function App() {
     cargarTareas();
   }, []);
 
-  const agregarUsuario = async () => {
-    const nombre = prompt("Ingrese el nombre");
-    if (!nombre) return;
+  const abrirModalCrearUsuario = () => {
+    setUsuarioModal({
+      open: true,
+      modo: "crear",
+      data: { nombre: "", email: "", activo: true },
+      id: null,
+    });
+  };
 
-    const email = prompt("Ingrese el correo");
-    if (!email) return;
+  const abrirModalEditarUsuario = (usuario) => {
+    setUsuarioModal({
+      open: true,
+      modo: "editar",
+      data: {
+        nombre: usuario.nombre || "",
+        email: usuario.email || "",
+        activo: usuario.activo ?? true,
+      },
+      id: usuario.id,
+    });
+  };
+
+  const cerrarModalUsuario = () => {
+    setUsuarioModal((prev) => ({ ...prev, open: false }));
+  };
+
+  const handleUsuarioChange = (field, value) => {
+    setUsuarioModal((prev) => ({
+      ...prev,
+      data: {
+        ...prev.data,
+        [field]: value,
+      },
+    }));
+  };
+
+  const submitUsuario = async (event) => {
+    event.preventDefault();
+
+    const { nombre, email, activo } = usuarioModal.data;
+    if (!nombre.trim()) {
+      alert("Ingrese el nombre del usuario.");
+      return;
+    }
+
+    if (!email.trim()) {
+      alert("Ingrese el correo electrónico del usuario.");
+      return;
+    }
 
     try {
-      await api.post("/usuarios", { nombre, email });
+      if (usuarioModal.modo === "crear") {
+        await api.post("/usuarios", { nombre, email, activo });
+      } else {
+        await api.patch(`/usuarios/${usuarioModal.id}`, {
+          nombre,
+          email,
+          activo,
+        });
+      }
+
       cargarUsuarios();
+      cerrarModalUsuario();
     } catch (error) {
-      console.error("Error al agregar usuario:", error);
-      alert("Error al agregar usuario");
+      console.error("Error al guardar usuario:", error);
+      alert("Error al guardar usuario");
     }
   };
 
@@ -105,51 +158,70 @@ export default function App() {
     }
   };
 
-  const editarUsuario = async (usuario) => {
-    const nombre = prompt("Nuevo nombre:", usuario.nombre);
-    if (!nombre) return;
-
-    const email = prompt("Nuevo correo:", usuario.email);
-    if (!email) return;
-
-    try {
-      await api.patch(`/usuarios/${usuario.id}`, { nombre, email });
-      cargarUsuarios();
-    } catch (error) {
-      console.error("Error al editar usuario:", error);
-      alert("Error al editar usuario");
-    }
+  const abrirModalCrearProyecto = () => {
+    setProyectoModal({
+      open: true,
+      modo: "crear",
+      data: { nombre: "", descripcion: "" },
+      id: null,
+    });
   };
 
-  const agregarProyecto = async () => {
-    const nombre = prompt("Ingrese el nombre del proyecto");
-    if (!nombre) return;
-
-    const descripcion = prompt("Ingrese la descripción");
-    if (!descripcion) return;
-
-    try {
-      await api.post("/proyectos", { nombre, descripcion });
-      cargarProyectos();
-    } catch (error) {
-      console.error("Error al agregar proyecto:", error);
-      alert("Error al agregar proyecto");
-    }
+  const abrirModalEditarProyecto = (proyecto) => {
+    setProyectoModal({
+      open: true,
+      modo: "editar",
+      data: {
+        nombre: proyecto.nombre || "",
+        descripcion: proyecto.descripcion || "",
+      },
+      id: proyecto.id,
+    });
   };
 
-  const editarProyecto = async (proyecto) => {
-    const nombre = prompt("Nuevo nombre:", proyecto.nombre);
-    if (!nombre) return;
+  const cerrarModalProyecto = () => {
+    setProyectoModal((prev) => ({ ...prev, open: false }));
+  };
 
-    const descripcion = prompt("Nueva descripción:", proyecto.descripcion);
-    if (!descripcion) return;
+  const handleProyectoChange = (field, value) => {
+    setProyectoModal((prev) => ({
+      ...prev,
+      data: {
+        ...prev.data,
+        [field]: value,
+      },
+    }));
+  };
+
+  const submitProyecto = async (event) => {
+    event.preventDefault();
+
+    const { nombre, descripcion } = proyectoModal.data;
+    if (!nombre.trim()) {
+      alert("Ingrese el nombre del proyecto.");
+      return;
+    }
+
+    if (!descripcion.trim()) {
+      alert("Ingrese la descripción del proyecto.");
+      return;
+    }
 
     try {
-      await api.patch(`/proyectos/${proyecto.id}`, { nombre, descripcion });
+      if (proyectoModal.modo === "crear") {
+        await api.post("/proyectos", { nombre, descripcion });
+      } else {
+        await api.patch(`/proyectos/${proyectoModal.id}`, {
+          nombre,
+          descripcion,
+        });
+      }
+
       cargarProyectos();
+      cerrarModalProyecto();
     } catch (error) {
-      console.error("Error al editar proyecto:", error);
-      alert("Error al editar proyecto");
+      console.error("Error al guardar proyecto:", error);
+      alert("Error al guardar proyecto");
     }
   };
 
@@ -248,15 +320,15 @@ export default function App() {
         {vista === "Usuarios" ? (
           <VistaUsuarios
             usuarios={usuarios}
-            agregarUsuario={agregarUsuario}
-            editarUsuario={editarUsuario}
+            abrirModalCrearUsuario={abrirModalCrearUsuario}
+            abrirModalEditarUsuario={abrirModalEditarUsuario}
             eliminarUsuario={eliminarUsuario}
           />
         ) : vista === "Proyectos" ? (
           <VistaProyectos
             proyectos={proyectos}
-            agregarProyecto={agregarProyecto}
-            editarProyecto={editarProyecto}
+            abrirModalCrearProyecto={abrirModalCrearProyecto}
+            abrirModalEditarProyecto={abrirModalEditarProyecto}
             eliminarProyecto={eliminarProyecto}
           />
         ) : vista === "Tareas" ? (
@@ -274,6 +346,126 @@ export default function App() {
           <VistaEnConstruccion vista={vista} />
         )}
       </main>
+
+      {usuarioModal.open && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h2>
+                {usuarioModal.modo === "crear"
+                  ? "Crear nuevo usuario"
+                  : "Editar usuario"}
+              </h2>
+              <button className="btn btn-icon" onClick={cerrarModalUsuario}>
+                X
+              </button>
+            </div>
+
+            <form onSubmit={submitUsuario}>
+              <label>
+                Nombre
+                <input
+                  type="text"
+                  value={usuarioModal.data.nombre}
+                  placeholder="Nombre"
+                  onChange={(event) =>
+                    handleUsuarioChange("nombre", event.target.value)
+                  }
+                />
+              </label>
+
+              <label>
+                Correo electrónico
+                <input
+                  type="email"
+                  value={usuarioModal.data.email}
+                  placeholder="ejemplo@gmail.com"
+                  onChange={(event) =>
+                    handleUsuarioChange("email", event.target.value)
+                  }
+                />
+              </label>
+
+              <label>
+                Estado
+                <select
+                  value={usuarioModal.data.activo ? "activo" : "inactivo"}
+                  onChange={(event) =>
+                    handleUsuarioChange(
+                      "activo",
+                      event.target.value === "activo"
+                    )
+                  }
+                >
+                  <option value="activo">Activo</option>
+                  <option value="inactivo">Inactivo</option>
+                </select>
+              </label>
+
+              <div className="modal-actions">
+                <button type="button" className="btn" onClick={cerrarModalUsuario}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Guardar usuario
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {proyectoModal.open && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <div className="modal-header">
+              <h2>
+                {proyectoModal.modo === "crear"
+                  ? "Nuevo proyecto"
+                  : "Editar proyecto"}
+              </h2>
+              <button className="btn btn-icon" onClick={cerrarModalProyecto}>
+                X
+              </button>
+            </div>
+
+            <form onSubmit={submitProyecto}>
+              <label>
+                Nombre
+                <input
+                  type="text"
+                  value={proyectoModal.data.nombre}
+                  placeholder="    "
+                  onChange={(event) =>
+                    handleProyectoChange("nombre", event.target.value)
+                  }
+                />
+              </label>
+
+              <label>
+                Descripción
+                <input
+                  type="text"
+                  value={proyectoModal.data.descripcion}
+                  placeholder="   "
+                  onChange={(event) =>
+                    handleProyectoChange("descripcion", event.target.value)
+                  }
+                />
+              </label>
+
+              <div className="modal-actions">
+                <button type="button" className="btn" onClick={cerrarModalProyecto}>
+                  Cancelar
+                </button>
+                <button type="submit" className="btn btn-primary">
+                  Guardar proyecto
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
