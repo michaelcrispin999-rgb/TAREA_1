@@ -1,0 +1,94 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id             Int      @id @default(autoincrement())
+  nombre         String
+  email          String   @unique
+  activo         Boolean  @default(true)
+  fechaCreacion  DateTime @default(now())
+  fechaActualiza DateTime @updatedAt
+
+  proyectosCreados    Proyecto[] @relation("Creador")
+  proyectosEjecutados Proyecto[] @relation("Ejecutor")
+
+  tareasAsignadas Tarea[] @relation("Asigna")
+  tareasRecibidas Tarea[] @relation("Asignado")
+
+  historicos Historico[]
+}
+
+model Proyecto {
+  id             Int      @id @default(autoincrement())
+  nombre         String
+  descripcion    String
+  fechaCreacion  DateTime @default(now())
+  fechaActualiza DateTime @updatedAt
+
+  idUsuarioCreador  Int
+  idUsuarioEjecutor Int?
+
+  creador  Usuario @relation("Creador", fields: [idUsuarioCreador], references: [id])
+  ejecutor Usuario? @relation("Ejecutor", fields: [idUsuarioEjecutor], references: [id])
+
+  tareas Tarea[]
+
+  @@unique([nombre, idUsuarioCreador])
+}
+
+enum EstadoTarea {
+  por_asignar
+  pendiente
+  en_curso
+  terminado
+  cancelado
+}
+
+enum AccionHistorico {
+  asignacion
+  cambio_estado
+  reasignacion
+}
+
+model Tarea {
+  id          Int         @id @default(autoincrement())
+  descripcion String
+  estado      EstadoTarea @default(por_asignar)
+
+  fechaCreacion  DateTime @default(now())
+  fechaActualiza DateTime @updatedAt
+
+  idProyecto        Int
+  idUsuarioAsigna   Int?
+  idUsuarioAsignado Int?
+
+  proyecto Proyecto @relation(fields: [idProyecto], references: [id], onDelete: Cascade)
+
+  asigna Usuario? @relation("Asigna", fields: [idUsuarioAsigna], references: [id])
+
+  asignado Usuario? @relation("Asignado", fields: [idUsuarioAsignado], references: [id])
+
+  historicos Historico[]
+}
+
+model Historico {
+  id Int @id @default(autoincrement())
+
+  idTarea         Int
+  idUsuarioAccion Int
+
+  accion AccionHistorico
+
+  valorAnterior String?
+  valorNuevo    String
+
+  fecha DateTime @default(now())
+  tarea Tarea @relation(fields: [idTarea], references: [id], onDelete: Cascade)
+  usuarioAccion Usuario @relation(fields: [idUsuarioAccion], references: [id])
+}
