@@ -112,6 +112,90 @@ th {
   white-space: nowrap;
 }
 
+.btn-small {
+  padding: 6px 10px;
+  font-size: 0.88rem;
+  border-radius: 6px;
+}
+
+.btn-tertiary {
+  background: #f3f4f6;
+  color: #1f2937;
+  border: 1px solid #d1d5db;
+}
+
+.alert {
+  padding: 14px 18px;
+  border-radius: 12px;
+  margin-bottom: 16px;
+}
+
+.alert-success {
+  background: #ecfdf5;
+  color: #0f766e;
+  border: 1px solid #a7f3d0;
+}
+
+.alert-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.task-details-row td {
+  background: #f9fafb;
+}
+
+.task-details-card {
+  padding: 16px;
+  border-radius: 12px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+.task-details-row-item {
+  margin-bottom: 10px;
+}
+
+.task-history {
+  margin-top: 12px;
+  display: grid;
+  gap: 14px;
+}
+
+.history-event {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  font-size: 0.95rem;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+}
+
+.history-event-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+  margin-top: 2px;
+}
+
+.history-event-content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.history-event-text {
+  color: #111827;
+  font-weight: 500;
+}
+
+.history-event-time {
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -168,17 +252,43 @@ th {
   margin-top: 18px;
 }
 
-.historico-proyectos {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 16px;
+.form-card {
+  position: relative;
 }
 
-.historico-proyectos span {
-  font-weight: 700;
-  color: #374151;
+.floating-message-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 5;
+}
+
+.floating-message-card {
+  width: min(100%, 420px);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 18px 36px rgba(15, 23, 42, 0.18);
+}
+
+.floating-message-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.floating-message-content {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  color: #111827;
+  margin-bottom: 16px;
 }
 
 .historico-card {
